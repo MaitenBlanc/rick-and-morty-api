@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { forkJoin, map, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -22,5 +22,17 @@ export class ApiService {
     const ids = idsArray.join(',');
 
     return this.http.get<any[]>(`${this.apiURL.replace('character', 'episode')}/${ids}`);
+  }
+
+  getGlobalCounts() {
+    return forkJoin({
+      characters: this.http.get<any>('https://rickandmortyapi.com/api/character'),
+      episodes: this.http.get<any>('https://rickandmortyapi.com/api/episode'),
+    }).pipe(
+      map(res => ({
+        characters: res.characters.info.count,
+        episodes: res.episodes.info.count,
+      }))
+    );
   }
 }

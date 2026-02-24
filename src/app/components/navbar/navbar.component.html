@@ -1,23 +1,26 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary">
   <div class="container-fluid">
     <a class="navbar-brand fw-bold" routerLink="/">Rick & Morty</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
+        <li class="nav-item d-flex justify-content-center align-items-center">
           <a class="nav-link" routerLink="/characters" routerLinkActive="active">Characters</a>
+          <span class="badge rounded-pill bg-danger ms-2" style="font-size: 0.6rem;">{{counts().characters}}</span>
         </li>
-        <li class="nav-item">
+        <li class="nav-item d-flex justify-content-center align-items-center">
           <a class="nav-link disabled">Episodes</a>
+          <span class="badge rounded-pill bg-danger ms-2" style="font-size: 0.6rem;">{{counts().episodes}}</span>
         </li>
         <li class="nav-item">
           <a class="nav-link disabled">Locations</a>
         </li>
       </ul>
-      <div class="d-flex text-secondary">
-        <span class="me-3">Profile</span>
+      <div class="d-flex text-secondary flex-column flex-lg-row justify-content-between">
+        <span class="me-5">Profile</span>
         <span>Log Out</span>
       </div>
     </div>
