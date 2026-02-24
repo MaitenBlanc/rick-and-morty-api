@@ -1,0 +1,57 @@
+@if (character()) {
+<div class="container mt-4 text-white">
+    <app-breadcrumb [steps]="[{ label: 'Characters', url: '/characters' }, 
+    { label: character()?.name || 'Cargando...'}]" />
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="p-4 rounded h-100" style="background-color: #1e1e1e; border: 1px solid #333;">
+                <img [src]="character()?.image" class="img-fluid rounded mb-4" [alt]="character()?.name">
+
+                <div class="p-3 rounded" style="background-color: #121212; border: 1px solid #222;">
+                    <h3 class="h5 text-secondary border-bottom border-secondary pb-2 mb-3">Character Info</h3>
+                    <div class="small">
+                        <p class="mb-1 text-secondary">Name: <span class="text-white">{{ character()?.name }}</span></p>
+                        <p class="mb-1 text-secondary">Status:
+                            <span [ngClass]="{
+                                'text-success': character()?.status === 'Alive',
+                                'text-danger': character()?.status === 'Dead',
+                                'text-warning': character()?.status === 'unknown'
+                            }">{{ character()?.status | translate }}</span>
+                        </p>
+                        <p class="mb-1 text-secondary">Species: <span class="text-white">{{ character()?.species
+                                }}</span></p>
+                        <p class="mb-1 text-secondary">Gender: <span class="text-white">{{ character()?.gender |
+                                translate }}</span></p>
+                        <p class="mb-1 text-secondary">Origin: <span class="text-info">{{ character()?.origin?.name
+                                }}</span></p>
+                        <p class="mb-0 text-secondary">Location: <span class="text-info">{{ character()?.location?.name
+                                }}</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="p-4 rounded h-100" style="background-color: #1e1e1e; border: 1px solid #333;">
+                <h2 class="h4 mb-4 text-secondary">List of Episodes appearances</h2>
+
+                <div class="episodes-scroll" style="max-height: 500px; overflow-y: auto;">
+                    <ul class="list-unstyled">
+                        @for (ep of episodes(); track ep.id) {
+                        <li class="mb-1">
+                            <a href="#" class="text-info text-decoration-none small">
+                                Episode {{ ep.id }} - {{ ep.name }}
+                            </a>
+                        </li>
+                        } @empty {
+                        <li class="text-secondary small">Cargando episodios...</li>
+                        }
+                        <li class="mt-2"><a href="#" class="text-info small">(more)</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+}

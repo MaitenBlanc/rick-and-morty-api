@@ -1,0 +1,33 @@
+<div class="container mt-4">
+
+    <app-breadcrumb [steps]="[{ label: 'Characters' }]" />
+
+        <div class="row my-3 mb-4">
+            <div class="col-md-4">
+                <div class="input-group">
+                    <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="Search..."
+                        #searchInput (keyup.enter)="onSearch(searchInput.value)">
+                    <button class="btn btn-outline-primary" type="button" (click)="onSearch(searchInput.value)">
+                        Search
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    @if (characters().length > 0) {
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4">
+        @for (item of characters().slice(0, 10); track item.id) {
+        <div class="col">
+            <app-character-card [character]="item" (click)="navigateToDetails(item.id)" style="cursor: pointer;" />
+        </div>
+        }
+    </div>
+
+    <app-pagination [current]="currentPage()" (onPageChange)="changePage($event)" />
+
+    } @else {
+    <div class="text-center text-white py-5">
+        <p>Esperando respuesta de la API de Rick & Morty...</p>
+    </div>
+    }
+</div>

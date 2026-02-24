@@ -1,0 +1,14 @@
+.error-container {
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+h1 {
+  font-size: 6rem;
+  color: #00b0c8;
+  text-shadow: 2px 2px #000;
+}

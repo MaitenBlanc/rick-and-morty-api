@@ -1,0 +1,23 @@
+.custom-page-link {
+    background-color: #222222 !important;
+    border-color: #444444 !important;
+    color: #007bff !important;
+    padding: 0.5rem 0.8rem;
+}
+
+.page-item.disabled .custom-page-link {
+    background-color: #1a1a1a !important;
+    color: #555555 !important;
+    border-color: #333333 !important;
+}
+
+.page-item.active .custom-page-link {
+    background-color: #007bff !important;
+    border-color: #007bff !important;
+    color: white !important;
+    z-index: 3;
+}
+
+.custom-page-link:focus {
+    box-shadow: none;
+}

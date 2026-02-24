@@ -1,0 +1,19 @@
+<nav aria-label="breadcrumb" class="rounded" style="background-color: #222222;">
+    <ol class="breadcrumb m-3 p-2">
+        <li class="breadcrumb-item">
+            <a routerLink="/" class="text-decoration-none">Home</a>
+        </li>
+
+        @for (step of steps(); track step.label; let last = $last) {
+            @if (!last && step.url) {
+                <li class="breadcrumb-item">
+                    <a [routerLink]="step.url" class="text-decoration-none">{{ step.label }}</a>
+                </li>
+            } @else {
+                <li class="breadcrumb-item active text-secondary" aria-current="page">
+                    {{ step.label }}
+                </li>
+            }
+        }
+    </ol>
+</nav>
