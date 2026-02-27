@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Character } from '../../core/models/character.model';
 import { ApiService } from '../../core/services/api.services';
 import { CommonModule } from '@angular/common';
-import { TranslatePipe } from '../../shared/translate.pipe';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { Breadcrumb } from '../breadcrumb/breadcrumb.component';
 
 @Component({

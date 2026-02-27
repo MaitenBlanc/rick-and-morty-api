@@ -1,6 +1,6 @@
 @if (character()) {
 <div class="container mt-4 text-white">
-    <app-breadcrumb [steps]="[{ label: 'Characters', url: '/characters' }, 
+    <app-breadcrumb [steps]="[{ label: 'Characters', url: '/characters' },
     { label: character()?.name || 'Cargando...'}]" />
 
     <div class="row g-4">

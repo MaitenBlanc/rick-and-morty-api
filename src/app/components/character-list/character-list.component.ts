@@ -28,7 +28,8 @@ export class CharacterList implements OnInit {
   loadCharacters(): void {
     this.characterService.getCharacters(this.currentPage(), this.searchTerm()).subscribe({
       next: (data) => {
-        this.characters.set(data.results);
+        this.characters.set(data);
+        // console.log(data);
       },
       error: (err) => {
         (console.error('Error loading characters:', err), this.characters.set([]));
