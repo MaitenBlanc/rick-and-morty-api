@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { ApiService } from '../../core/services/api.services';
+import { ApiService } from '../../../core/services/api.services';
 
 @Component({
   selector: 'app-navbar',

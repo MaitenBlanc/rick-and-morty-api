@@ -4,7 +4,7 @@ import { Character } from '../../core/models/character.model';
 import { ApiService } from '../../core/services/api.services';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
-import { Breadcrumb } from '../breadcrumb/breadcrumb.component';
+import { Breadcrumb } from '../../shared/components/breadcrumb/breadcrumb.component';
 
 @Component({
   selector: 'app-character-details',
@@ -19,6 +19,7 @@ export class CharacterDetails implements OnInit {
 
   character = signal<Character | null>(null);
   episodes = signal<any[]>([]);
+  showAllEpisodes = signal<boolean>(false);
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
@@ -34,12 +35,19 @@ export class CharacterDetails implements OnInit {
   }
 
   loadEpisodes(urls: string[]): void {
-    const utlsToFetch = urls.slice(0, 15);
-    this.apiService.getEpisodesMetadata(utlsToFetch).subscribe({
+    const urlsToFetch = this.showAllEpisodes() ? urls : urls.slice(0, 15);
+
+    this.apiService.getEpisodesMetadata(urlsToFetch).subscribe({
       next: (data) => {
         this.episodes.set(Array.isArray(data) ? data : [data]);
       },
       error: (err) => console.error('Error: ', err),
     });
+  }
+
+  onShowMore(): void {
+    this.showAllEpisodes.set(true);
+    const allUrls = this.character()?.episode || [];
+    this.loadEpisodes(allUrls);
   }
 }

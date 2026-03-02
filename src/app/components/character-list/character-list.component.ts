@@ -2,9 +2,9 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { CharacterCard } from '../character-card/character-card.component';
 import { Character } from '../../core/models/character.model';
 import { ApiService } from '../../core/services/api.services';
-import { PaginationComponent } from '../pagination/pagination.component';
 import { Router } from '@angular/router';
-import { Breadcrumb } from '../breadcrumb/breadcrumb.component';
+import { Breadcrumb } from '../../shared/components/breadcrumb/breadcrumb.component';
+import { PaginationComponent } from '../../shared/components/pagination/pagination.component';
 
 @Component({
   selector: 'app-character-list',
