@@ -42,7 +42,7 @@
                   [class.is-valid]="isPerfectField('password')" [class.is-invalid]="isValidField('password')">
 
                 @if (isValidField('password')) {
-                <small class="text-danger">
+                <small class="text-danger" style="white-space: pre-line; display: block;">
                   {{ getFieldError('password') }}
                 </small>
                 }

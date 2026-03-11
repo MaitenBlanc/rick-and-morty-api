@@ -29,19 +29,33 @@ export class FormUtils {
   }
 
   static isPerfectField(form: FormGroup, fieldName: string): boolean {
-      const control = form.controls[fieldName];
-      return !control.errors && (control.dirty || control.touched);
-    }
+    const control = form.controls[fieldName];
+    return !control.errors && (control.dirty || control.touched);
+  }
 
   static getFieldError(form: FormGroup, fieldName: string): string | null {
-    if (!form.controls[fieldName]) return null;
-    const errors = form.controls[fieldName].errors ?? {};
+    const control = form.controls[fieldName];
+    if (!control || !control.errors) return null;
+
+    const errors = control.errors;
+    const messages: string[] = [];
+    const value = control.value || '';
+
+    if (errors['required']) messages.push('This field is required');
+    if (errors['minlength'])
+      messages.push(`Minimum ${errors['minlength'].requiredLength} characters`);
+    if (errors['email']) messages.push('Email is not valid');
+    if (errors['notEqual']) messages.push('Passwords are not equal');
 
     if (errors['pattern']) {
-      if (fieldName === 'zip') return 'Zip code should be a number';
-      if (fieldName === 'password') return 'At least one uppercase and one number required';
+      if (fieldName === 'zip') messages.push('Zip code should be a number');
+
+      if (fieldName === 'password') {
+        if (!/(?=.*[A-Z])/.test(value)) messages.push('At least one uppercase letter required');
+        if (!/(?=.*[0-9])/.test(value)) messages.push('At least one number required');
+      }
     }
 
-    return FormUtils.getTextError(errors);
+    return messages.length > 0 ? messages.join('\n') : null;
   }
 }

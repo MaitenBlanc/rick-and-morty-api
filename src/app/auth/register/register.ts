@@ -36,7 +36,8 @@ export class Register {
         [
           Validators.required,
           Validators.minLength(6),
-          Validators.pattern('(?=.*[A-Z])(?=.*[0-9]).*'),
+          Validators.pattern('(?=.*[A-Z]).*'),
+          Validators.pattern('(?=.*[0-9]).*'),
         ],
       ],
       repeatPassword: ['', [Validators.required]],

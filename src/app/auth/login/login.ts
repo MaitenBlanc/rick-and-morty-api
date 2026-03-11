@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { FormUtils } from '../../utils/form-util';
 
 @Component({
   selector: 'app-login',
@@ -10,6 +11,8 @@ import { AuthService } from '../../core/services/auth.service';
   styleUrl: './login.css',
 })
 export class Login {
+  formUtils = FormUtils;
+
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -19,8 +22,27 @@ export class Login {
 
   loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
+    password: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(6),
+        Validators.pattern('(?=.*[A-Z])(?=.*[0-9]).*'),
+      ],
+    ],
   });
+
+  isValidField(field: string) {
+    return FormUtils.isValidField(this.loginForm, field);
+  }
+
+  isPerfectField(field: string) {
+    return FormUtils.isPerfectField(this.loginForm, field);
+  }
+
+  getFieldError(field: string) {
+    return FormUtils.getFieldError(this.loginForm, field);
+  }
 
   onSubmit() {
     if (this.loginForm.invalid) {
