@@ -1,0 +1,26 @@
+.login-card {
+  background-color: #1e1f22;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.custom-input {
+  background-color: #313338;
+  border: 1px solid #4e5058;
+  color: #dbdee1;
+}
+
+.custom-input::placeholder {
+  color: #6d6f78;
+}
+
+.custom-input:focus {
+  background-color: #313338;
+  border-color: #90C747;
+  color: white;
+  box-shadow: none;
+}
+
+.portal-img {
+  width: 99%;
+}

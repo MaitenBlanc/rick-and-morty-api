@@ -1,0 +1,28 @@
+.register-wrapper {
+  min-height: calc(100vh - 120px);
+}
+
+.register-card {
+  background-color: #1e1f22;
+  border-radius: 0.3rem;
+  box-shadow: 0 0.6rem 1.8rem rgba(0,0,0,0.5);
+  color: #dbdee1;
+}
+
+.custom-input {
+  background-color: #313338;
+  border: 1px solid #4e5058;
+  color: #dbdee1;
+}
+
+.custom-input::placeholder {
+  color: #6d6f78;
+}
+
+.custom-input:focus {
+  background-color: #313338;
+  border-color: #90C747;
+  color: white;
+  box-shadow: none;
+}
+

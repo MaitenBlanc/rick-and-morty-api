@@ -1,0 +1,44 @@
+<div class="login-wrapper d-flex align-items-center justify-content-center">
+  <div class="container">
+    <div class="row align-items-center justify-content-center">
+
+      <div class="col-md-6 text-center">
+        <img class="img-fluid portal-img" src="./assets/img/login.png" alt="Rick and Morty">
+      </div>
+
+      <div class="col-md-4">
+        <div class="login-card p-4">
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+            <div class="mb-3">
+              <label class="form-label text-primary">Email address</label>
+              <input type="email" class="form-control custom-input" placeholder="email@example.com"
+                formControlName="email">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label text-primary">Password</label>
+              <input type="password" class="form-control custom-input" placeholder="Password"
+                formControlName="password">
+            </div>
+
+            <div class="mb-3 form-check">
+              <input type="checkbox" class="form-check-input" id="remember">
+              <label class="form-check-label text-secondary" for="remember">Remember me</label>
+            </div>
+
+            <button class="btn btn-primary py-2 mb-3" type="submit">Sign in</button>
+            <hr>
+            <div class="links">
+              <a routerLink="/auth/register" class="d-block mb-1 text-primary text-decoration-none">New around here?
+                Sign
+                up</a>
+              <a href="" class="text-primary text-decoration-none">Forgot password?</a>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

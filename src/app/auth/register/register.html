@@ -1,0 +1,135 @@
+<div class="register-wrapper d-flex align-items-center justify-content-center">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-12 col-lg-9">
+        <div class="register-card p-5 py-3">
+
+          <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+            <h2 class="text-secondary fw-bold text-center mb-4">Register</h2>
+
+            <div class="row mb-2">
+              <div class="col-md-6">
+                <label class="form-label text-primary">Full Name</label>
+                <input type="text" class="form-control custom-input" formControlName="fullName"
+                  placeholder="Cosme Fulanito" [class.is-valid]="isPerfectField('fullName')"
+                  [class.is-invalid]="isValidField('fullName')">
+
+                @if (isValidField('fullName')) {
+                <small class="text-danger">
+                  {{ getFieldError('fullName') }}
+                </small>
+                }
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label text-primary">Email</label>
+                <input type="email" class="form-control custom-input" formControlName="email"
+                  placeholder="example@example.com" [class.is-valid]="isPerfectField('email')"
+                  [class.is-invalid]="isValidField('email')">
+
+                @if (isValidField('email')) {
+                <small class="text-danger">
+                  {{ getFieldError('email') }}
+                </small>
+                }
+              </div>
+            </div>
+
+            <div class="row mb-2">
+              <div class="col-md-6">
+                <label class="form-label text-primary">Password</label>
+                <input type="password" class="form-control custom-input" formControlName="password"
+                  [class.is-valid]="isPerfectField('password')" [class.is-invalid]="isValidField('password')">
+
+                @if (isValidField('password')) {
+                <small class="text-danger">
+                  {{ getFieldError('password') }}
+                </small>
+                }
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-primary">Repeat Password</label>
+                <input type="password" class="form-control custom-input" [disabled]="isPosting()"
+                  formControlName="repeatPassword" [class.is-valid]="isPerfectField('repeatPassword')"
+                  [class.is-invalid]="isValidField('repeatPassword')">
+
+                @if (isValidField('repeatPassword')) {
+                <small class="text-danger">
+                  {{ getFieldError('repeatPassword') }}
+                </small>
+                }
+              </div>
+            </div>
+
+            <div class="mb-2">
+              <label class="form-label text-primary">Address</label>
+              <input type="text" class="form-control custom-input" formControlName="address"
+                placeholder="Apartment, studio or floor" [class.is-valid]="isPerfectField('address')"
+                [class.is-invalid]="isValidField('address')">
+
+              @if (isValidField('address')) {
+              <small class="text-danger">
+                {{ getFieldError('address') }}
+              </small>
+              }
+            </div>
+
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <label class="form-label text-primary">City</label>
+                <input type="text" class="form-control custom-input" formControlName="city" placeholder="Córdoba"
+                  [class.is-valid]="isPerfectField('city')" [class.is-invalid]="isValidField('city')">
+
+                @if (isValidField('city')) {
+                <small class="text-danger">
+                  {{ getFieldError('city') }}
+                </small>
+                }
+              </div>
+              <div class="col-md-4">
+                <label class="form-label text-primary">State</label>
+                <input type="text" class="form-control custom-input" formControlName="state" placeholder="Argentina"
+                  [class.is-valid]="isPerfectField('state')" [class.is-invalid]="isValidField('state')">
+
+                @if (isValidField('state')) {
+                <small class="text-danger">
+                  {{ getFieldError('state') }}
+                </small>
+                }
+              </div>
+              <div class="col-md-2">
+                <label class="form-label text-primary">Zip</label>
+                <input type="text" class="form-control custom-input" formControlName="zip" placeholder="5000"
+                  [class.is-valid]="isPerfectField('zip')" [class.is-invalid]="isValidField('zip')">
+
+                @if (isValidField('zip')) {
+                <small class="text-danger">
+                  {{ getFieldError('zip') }}
+                </small>
+                }
+              </div>
+            </div>
+
+            @if (hasError()) {
+            <div class="alert alert-danger py-2" style="font-size: 0.8rem;">
+              Please, verify the fields and try again.
+            </div>
+            }
+
+            <button type="submit" class="btn btn-primary px-4 py-2 mb-3"
+              [disabled]="registerForm.invalid || isPosting()">
+              {{ isPosting() ? 'Registering...' : 'Sign Up' }}
+            </button>
+
+            <hr class="m-1">
+
+            <div class="mt-3">
+              <a routerLink="/auth/login" class="text-primary text-decoration-none">Already Signed Up? Sign In</a>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
