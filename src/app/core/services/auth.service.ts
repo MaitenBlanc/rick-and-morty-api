@@ -3,7 +3,7 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { AuthResponse, RegisterFormData, User } from '../../auth/interfaces/auth.interface';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { Observable, map, catchError, of, throwError, tap } from 'rxjs';
+import { Observable, map, catchError, of, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 
 type AuthStatus = 'checking' | 'authenticated' | 'not-authenticated';
