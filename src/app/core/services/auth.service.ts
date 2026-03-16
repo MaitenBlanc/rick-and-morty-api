@@ -11,19 +11,23 @@ const BASE_URL = environment.baseUrl;
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private _authStatus = signal<AuthStatus>('checking');
+  private _authStatus = signal<AuthStatus>(
+    localStorage.getItem('token') ? 'authenticated' : 'not-authenticated',
+  );
   private _user = signal<User | null>(null);
   private _token = signal<string | null>(localStorage.getItem('token'));
 
   private http = inject(HttpClient);
   private router = inject(Router);
-
+  
+  
   checkStatusResource = rxResource({
     stream: () => this.checkStatus(),
   });
-
+  
   user = computed(() => this._user());
   token = computed(this._token);
+  authStatus = computed(() => this._authStatus());
 
   login(email: string, password: string): Observable<boolean> {
     return this.http
