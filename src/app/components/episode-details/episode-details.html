@@ -54,20 +54,26 @@
 
             <hr class="border-secondary opacity-50" />
 
-            <div class="d-flex flex-column">
+            <div class="row">
               @for (char of characters(); track char.id) {
-                <a
-                  class="text-primary text-decoration-none mb-1"
-                  (click)="navigateToCharacters(char.id)"
-                  style="cursor: pointer"
-                >
-                  {{ char.name }}
-                </a>
+                <div class="col-4 mb-2">
+                  <a
+                    class="text-primary text-decoration-none mb-1"
+                    (click)="navigateToCharacters(char.id)"
+                    style="cursor: pointer"
+                  >
+                    {{ char.name }}
+                  </a>
+                </div>
               }
             </div>
           </div>
         </div>
       </div>
     </div>
+  }
+
+  @if (episode()) {
+    <app-episode-comments [episodeId]="episode()!.id" />
   }
 </div>

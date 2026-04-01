@@ -7,10 +7,11 @@ import { Episode } from '../../core/interfaces/episode.interface';
 import { Character } from '../../core/models/character.model';
 import { Breadcrumb } from '../../shared/components/breadcrumb/breadcrumb.component';
 import { FavoriteService } from '../../core/services/favorite.service';
+import { EpisodeComments } from "../episode-comments/episode-comments";
 
 @Component({
   selector: 'episode-details',
-  imports: [CommonModule, Breadcrumb],
+  imports: [CommonModule, Breadcrumb, EpisodeComments],
   templateUrl: 'episode-details.html',
   styleUrl: './episode-details.css',
 })
