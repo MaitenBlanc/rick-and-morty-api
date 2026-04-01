@@ -1,12 +1,13 @@
 import { Component, effect, inject, signal } from '@angular/core';
-import {RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { ApiService } from '../../../core/services/api.services';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, MatTooltipModule],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css',
 })

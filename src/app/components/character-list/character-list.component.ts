@@ -16,6 +16,7 @@ import { PaginationComponent } from '../../shared/components/pagination/paginati
 export class CharacterList implements OnInit {
   characters = signal<Character[]>([]);
   currentPage = signal<number>(1);
+  totalPages = signal(0);
   searchTerm = signal<string>('');
 
   private characterService = inject(ApiService);
@@ -28,11 +29,14 @@ export class CharacterList implements OnInit {
   loadCharacters(): void {
     this.characterService.getCharacters(this.currentPage(), this.searchTerm()).subscribe({
       next: (data) => {
-        this.characters.set(data);
+        this.characters.set(data.results);
+        this.totalPages.set(data.info.pages);
         // console.log(data);
       },
       error: (err) => {
-        (console.error('Error loading characters:', err), this.characters.set([]));
+        console.error('Error loading characters:', err);
+        this.characters.set([]);
+        this.totalPages.set(0);
       },
     });
   }
@@ -46,7 +50,7 @@ export class CharacterList implements OnInit {
   changePage(next: number): void {
     const nextPage = this.currentPage() + next;
 
-    if (nextPage >= 1) {
+    if (nextPage >= 1 && nextPage <= this.totalPages()) {
       this.currentPage.set(nextPage);
       this.loadCharacters();
     }

@@ -40,11 +40,12 @@ export class Register {
           Validators.pattern('(?=.*[0-9]).*'),
         ],
       ],
+      nickname: ['', [Validators.required, Validators.minLength(3)]],
       repeatPassword: ['', [Validators.required]],
       address: ['', [Validators.required, Validators.minLength(8)]],
       city: ['', [Validators.required, Validators.minLength(6)]],
       state: ['', [Validators.required, Validators.minLength(6)]],
-      zip: [, [Validators.required, Validators.pattern('^[0-9]*$')]],
+      zip: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
     },
     {
       validators: [this.isFieldOneEqualFieldTwo('password', 'repeatPassword')],
@@ -92,8 +93,12 @@ export class Register {
     }
 
     this.isPosting.set(true);
+    const rawValues = this.registerForm.getRawValue();
 
-    const formData = this.registerForm.getRawValue() as RegisterFormData;
+    const formData: RegisterFormData = {
+      ...rawValues,
+      zip: Number(rawValues.zip),
+    } as RegisterFormData;
 
     this.authService.register(formData).subscribe({
       next: () => {

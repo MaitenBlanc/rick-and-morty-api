@@ -9,5 +9,6 @@ import { Component, input, output } from '@angular/core';
 })
 export class PaginationComponent {
   current = input.required<number>();
+  total = input.required<number>();
   onPageChange = output<number>();
 }

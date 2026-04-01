@@ -1,0 +1,54 @@
+<div class="container mt-4 text-white">
+  <app-breadcrumb [steps]="breadcrumbSteps()" />
+
+  @if (isLoading()) {
+    <div class="text-center my-5">
+      <div class="spinner-border text-info"></div>
+    </div>
+  } @else {
+    <div class="p-4 mt-4 bg-dark rounded shadow-sm">
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="border border-secondary rounded p-4 h-100 bg-transparent">
+            <h4 class="text-info mb-4 fw-bold ">Info of the episode</h4>
+
+            <hr class="border-secondary opacity-50" />
+
+            <div class="mb-2" style="font-size: 1.1rem">
+              <span class="text-secondary fw-bold">Name:</span>
+              <span class="text-light ms-1">{{ episode()?.name }}</span>
+            </div>
+            <div class="mb-2" style="font-size: 1.1rem">
+              <span class="text-secondary fw-bold">air date:</span>
+              <span class="text-light ms-1">{{ episode()?.air_date }}</span>
+            </div>
+            <div class="mb-0" style="font-size: 1.1rem">
+              <span class="text-secondary fw-bold">episode code:</span>
+              <span class="text-light ms-1">{{ episode()?.episode }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="border border-secondary rounded p-4 h-100 bg-transparent">
+            <h4 class="text-info mb-4 fw-bold">Characters in this episode</h4>
+
+            <hr class="border-secondary opacity-50" />
+
+            <div class="d-flex flex-column">
+              @for (char of characters(); track char.id) {
+                <a
+                  class="text-primary text-decoration-none mb-1"
+                  (click)="navigateToCharacters(char.id)"
+                  style="cursor: pointer"
+                >
+                  {{ char.name }}
+                </a>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
