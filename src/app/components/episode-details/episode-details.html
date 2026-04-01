@@ -10,8 +10,27 @@
       <div class="row g-4">
         <div class="col-md-6">
           <div class="border border-secondary rounded p-4 h-100 bg-transparent">
-            <h4 class="text-info mb-4 fw-bold ">Info of the episode</h4>
+            <div class="d-flex justify-content-between">
+              <h4 class="text-info fw-bold m-0">
+                <span class="align-middle">Info of the episode</span>
+              </h4>
 
+              <button
+                class="btn btn-sm p-0 d-flex justify-content-between"
+                (click)="favoriteService.toggleFavorite(episode()!.id)"
+              >
+                <i
+                  class="bi fs-4"
+                  [ngClass]="
+                    favoriteService.isFavorite(episode()!.id)
+                      ? 'bi-heart-fill text-danger'
+                      : 'bi-heart text-white'
+                  "
+                  alt="favorite icon"
+                >
+                </i>
+              </button>
+            </div>
             <hr class="border-secondary opacity-50" />
 
             <div class="mb-2" style="font-size: 1.1rem">

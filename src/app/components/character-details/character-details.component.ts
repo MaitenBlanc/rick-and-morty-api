@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Character } from '../../core/models/character.model';
-import { ApiService } from '../../core/services/api.services';
+import { ApiService } from '../../core/services/api.service';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { Breadcrumb } from '../../shared/components/breadcrumb/breadcrumb.component';

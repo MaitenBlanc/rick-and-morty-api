@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CharacterCard } from '../character-card/character-card.component';
 import { Character } from '../../core/models/character.model';
-import { ApiService } from '../../core/services/api.services';
+import { ApiService } from '../../core/services/api.service';
 import { Router } from '@angular/router';
 import { Breadcrumb } from '../../shared/components/breadcrumb/breadcrumb.component';
 import { PaginationComponent } from '../../shared/components/pagination/pagination.component';

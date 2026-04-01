@@ -32,7 +32,12 @@
 
       <div class="d-flex align-items-center text-secondary px-4" matTooltip="Go to profile">
         <a class="text-primary me-4 fw-bold" routerLink="/profile">
-          <i class="bi bi-person-circle me-1"></i> {{ authService.user()?.fullName }}
+          <img
+            [src]="authService.user()?.imgProfile"
+            alt="Profile Picture"
+            class="rounded-circle me-2 object-fit-cover"
+            style="width: 1.5rem; height: 1.5rem; border: 1px solid #0d6efd"
+          />{{ authService.user()?.fullName }}
         </a>
 
         <span class="logout-link" style="cursor: pointer" (click)="onLogout()"> Log Out </span>

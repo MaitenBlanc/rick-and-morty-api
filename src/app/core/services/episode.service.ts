@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable, of } from 'rxjs';
 import { Episode, EpisodeResponse } from '../interfaces/episode.interface';
 
 @Injectable({
@@ -18,5 +18,14 @@ export class EpisodeService {
   getEpisodeById(id: string | number): Observable<Episode> {
     const url = `${this.baseUrl}/${id}`;
     return this.http.get<Episode>(url);
+  }
+
+  getEpisodesMultiple(ids: number[]): Observable<Episode[]> {
+    if (ids.length === 0) return of([]);
+
+    const idsString = ids.join(',');
+    const url = `${this.baseUrl}/${idsString}`;
+
+    return this.http.get<Episode[]>(url).pipe(map((res) => (Array.isArray(res) ? res : [res])));
   }
 }

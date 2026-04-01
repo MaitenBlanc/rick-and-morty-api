@@ -5,7 +5,8 @@ import { Episode } from '../../core/interfaces/episode.interface';
 import { Breadcrumb } from '../../shared/components/breadcrumb/breadcrumb.component';
 import { PaginationComponent } from '../../shared/components/pagination/pagination.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterLink } from "@angular/router";
+import { RouterLink } from '@angular/router';
+import { FavoriteService } from '../../core/services/favorite.service';
 
 @Component({
   selector: 'episodes',
@@ -15,13 +16,13 @@ import { RouterLink } from "@angular/router";
 })
 export class Episodes implements OnInit {
   private episodeService = inject(EpisodeService);
+  public favoriteService = inject(FavoriteService);
 
-  searchTerm = signal<string>('');
-  episodes = signal<Episode[]>([]);
-  currentPage = signal(1);
-  totalPages = signal(0);
-  isLoading = signal(false);
-  favoriteEpisodes = signal<Set<number>>(new Set());
+  public searchTerm = signal<string>('');
+  public episodes = signal<Episode[]>([]);
+  public currentPage = signal(1);
+  public totalPages = signal(0);
+  public isLoading = signal(false);
 
   ngOnInit(): void {
     this.loadEpisodes(this.currentPage());
@@ -63,10 +64,6 @@ export class Episodes implements OnInit {
     if (this.currentPage() > 1) {
       this.loadEpisodes(this.currentPage() - 1);
     }
-  }
-
-  toggleFavorite(episode: Episode) {
-    // TODO logica para guardar en db
   }
 
   onSearch(name: string): void {

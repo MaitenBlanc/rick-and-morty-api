@@ -1,14 +1,16 @@
+import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EpisodeService } from '../../core/services/episode.service';
-import { ApiService } from '../../core/services/api.services';
+import { ApiService } from '../../core/services/api.service';
 import { Episode } from '../../core/interfaces/episode.interface';
 import { Character } from '../../core/models/character.model';
 import { Breadcrumb } from '../../shared/components/breadcrumb/breadcrumb.component';
+import { FavoriteService } from '../../core/services/favorite.service';
 
 @Component({
   selector: 'episode-details',
-  imports: [Breadcrumb],
+  imports: [CommonModule, Breadcrumb],
   templateUrl: 'episode-details.html',
   styleUrl: './episode-details.css',
 })
@@ -17,6 +19,7 @@ export class EpisodeDetails implements OnInit {
   private router = inject(Router);
   private episodeService = inject(EpisodeService);
   private charatcerService = inject(ApiService);
+  public favoriteService = inject(FavoriteService);
 
   episode = signal<Episode | null>(null);
   characters = signal<Character[]>([]);

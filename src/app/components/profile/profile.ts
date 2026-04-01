@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
 import { CommonModule } from '@angular/common';
@@ -6,6 +6,11 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { provideNativeDateAdapter } from '@angular/material/core';
+import { FavoriteService } from '../../core/services/favorite.service';
+import { EpisodeService } from '../../core/services/episode.service';
+import { Episode } from '../../core/interfaces/episode.interface';
+import { RouterLink } from '@angular/router';
+import { MatTooltip } from '@angular/material/tooltip';
 
 @Component({
   selector: 'profile',
@@ -16,6 +21,8 @@ import { provideNativeDateAdapter } from '@angular/material/core';
     MatDatepickerModule,
     MatInputModule,
     MatFormFieldModule,
+    RouterLink,
+    MatTooltip
   ],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
@@ -23,10 +30,14 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 export class Profile {
   private authService = inject(AuthService);
   private fb = inject(FormBuilder);
+  public favoriteService = inject(FavoriteService);
+  public episodeService = inject(EpisodeService);
 
   isEditing = signal(false);
   isPosting = signal(false);
   hasError = signal(false);
+  favoriteEpisodesData = signal<Episode[]>([]);
+  isLoadingFavorites = signal(true);
 
   user = this.authService.user;
   defaultImg = 'assets/img/avatar.svg';
@@ -39,6 +50,99 @@ export class Profile {
     birthdate: [this.user()?.birthdate || ''],
   });
 
+  constructor() {
+    effect(
+      () => {
+        const isLoadedFromDB = this.favoriteService.isInitialLoadDone();
+        const ids = this.favoriteService.favoriteIds();
+
+        if (!isLoadedFromDB) {
+          this.isLoadingFavorites.set(true);
+          return;
+        }
+
+        if (ids.length === 0) {
+          this.favoriteEpisodesData.set([]);
+          this.isLoadingFavorites.set(false);
+          return;
+        }
+
+        this.isLoadingFavorites.set(true);
+
+        this.episodeService.getEpisodesMultiple(ids).subscribe({
+          next: (episodes) => {
+            this.favoriteEpisodesData.set(episodes);
+            this.isLoadingFavorites.set(false);
+          },
+          error: (err) => {
+            this.isLoadingFavorites.set(false);
+          },
+        });
+      }
+    );
+  }
+
+  // Métodos para favoritos
+  loadFavorites() {
+    this.isLoadingFavorites.set(true);
+
+    const ids = this.favoriteService.favoriteIds();
+
+    if (ids.length === 0) {
+      setTimeout(() => {
+        this.favoriteEpisodesData.set([]);
+        this.isLoadingFavorites.set(false);
+      }, 800);
+      return;
+    }
+
+    this.episodeService.getEpisodesMultiple(ids).subscribe({
+      next: (episodes) => {
+        this.favoriteEpisodesData.set(episodes);
+        this.isLoadingFavorites.set(false);
+      },
+      error: (err) => {
+        console.error('Error loading favorite episodes:', err);
+        this.isLoadingFavorites.set(false);
+      },
+    });
+  }
+
+  removeFavorite(episodeId: number) {
+    this.favoriteService.toggleFavorite(episodeId);
+    this.favoriteEpisodesData.update((episodes) => episodes.filter((ep) => ep.id !== episodeId));
+  }
+
+  private loadFavoritesEffect = effect(() => {
+    const isLoadedFromDB = this.favoriteService.isInitialLoadDone();
+    const ids = this.favoriteService.favoriteIds();
+
+    if (!isLoadedFromDB) {
+      this.isLoadingFavorites.set(true);
+      return;
+    }
+
+    if (ids.length === 0) {
+      this.favoriteEpisodesData.set([]);
+      this.isLoadingFavorites.set(false);
+      return;
+    }
+
+    this.isLoadingFavorites.set(true);
+
+    this.episodeService.getEpisodesMultiple(ids).subscribe({
+      next: (episodes) => {
+        this.favoriteEpisodesData.set(episodes);
+        this.isLoadingFavorites.set(false);
+      },
+      error: (err) => {
+        console.error('Error loading favorite episodes:', err);
+        this.isLoadingFavorites.set(false);
+      },
+    });
+  });
+
+  // Métodos del perfil
   onUpdateProfile() {
     if (this.profileForm.invalid) return;
     console.log('Profile updated', this.profileForm.value);
