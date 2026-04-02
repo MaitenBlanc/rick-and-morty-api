@@ -1,8 +1,9 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { ApiService } from '../../../core/services/api.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-navbar',
@@ -12,19 +13,25 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   styleUrl: './navbar.component.css',
 })
 export class Navbar {
-  authService = inject(AuthService);
+  private authService = inject(AuthService);
   private apiService = inject(ApiService);
+  private destroyRef = inject(DestroyRef);
 
   user = this.authService.user;
 
-  counts = signal({
+  isAdmin = computed(() => {
+    const roles = this.user()?.roles;
+    return roles ? roles.includes('admin') : false;
+  });
+
+  public counts = signal({
     characters: 0,
     episodes: 0,
   });
 
   constructor() {
     effect(() => {
-      const user = this.authService.user();
+      const user = this.user();
       if (user && this.counts().characters === 0) {
         this.fetchGlobalCounts();
       }
@@ -32,14 +39,17 @@ export class Navbar {
   }
 
   fetchGlobalCounts() {
-    this.apiService.getGlobalCounts().subscribe({
-      next: (res) => {
-        this.counts.set(res);
-      },
-      error: (error) => {
-        console.error('Error fetching counts:', error);
-      },
-    });
+    this.apiService
+      .getGlobalCounts()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          this.counts.set(res);
+        },
+        error: (error) => {
+          console.error('Error fetching counts:', error);
+        },
+      });
   }
 
   onLogout() {

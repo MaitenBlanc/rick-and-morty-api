@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, input, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, input, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommentService } from '../../core/services/comment.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Comment } from '../../core/interfaces/comment.interface';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-episode-comments',
@@ -17,9 +18,15 @@ export class EpisodeComments implements OnInit {
   private commentService = inject(CommentService);
   private authService = inject(AuthService);
   private fb = inject(FormBuilder);
+  private destroyRef = inject(DestroyRef);
 
   public comments = this.commentService.comments;
   public currentUser = this.authService.user;
+  public isLocked = this.commentService.isEpisodeLocked;
+  public isAdmin = computed(() => {
+    const roles = this.currentUser()?.roles;
+    return roles ? roles.includes('admin') : false;
+  });
 
   public isSubmitting = signal(false);
   public editingCommentId = signal<string | null>(null);
@@ -29,7 +36,11 @@ export class EpisodeComments implements OnInit {
   });
 
   ngOnInit(): void {
-    this.commentService.getCommentsByEpisode(this.episodeId()).subscribe();
+    this.commentService
+      .getCommentsByEpisode(this.episodeId())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe();
+    this.commentService.checkLockStatus(this.episodeId());
   }
 
   onSubmit() {
@@ -44,26 +55,32 @@ export class EpisodeComments implements OnInit {
 
     if (currentEditId) {
       // Editar comentario
-      this.commentService.updateComment(currentEditId, content!).subscribe({
-        next: () => {
-          this.cancelEdit();
-          this.isSubmitting.set(false);
-        },
-        error: () => {
-          this.isSubmitting.set(false);
-        },
-      });
+      this.commentService
+        .updateComment(currentEditId, content!)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: () => {
+            this.cancelEdit();
+            this.isSubmitting.set(false);
+          },
+          error: () => {
+            this.isSubmitting.set(false);
+          },
+        });
     } else {
       // Crear comentario
-      this.commentService.addComment(this.episodeId(), content!).subscribe({
-        next: () => {
-          this.commentForm.reset();
-          this.isSubmitting.set(false);
-        },
-        error: () => {
-          this.isSubmitting.set(false);
-        },
-      });
+      this.commentService
+        .addComment(this.episodeId(), content!)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: () => {
+            this.commentForm.reset();
+            this.isSubmitting.set(false);
+          },
+          error: () => {
+            this.isSubmitting.set(false);
+          },
+        });
     }
   }
 
@@ -88,5 +105,11 @@ export class EpisodeComments implements OnInit {
         },
       });
     }
+  }
+
+  toggleLock() {
+    this.commentService.toggleEpisodeLock(this.episodeId()).subscribe(() => {
+      this.commentService.checkLockStatus(this.episodeId());
+    });
   }
 }

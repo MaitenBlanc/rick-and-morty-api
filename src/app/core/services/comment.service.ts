@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../environments/environment.prod';
 import { Comment } from '../interfaces/comment.interface';
 import { tap } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 const BASE_URL = environment.baseUrl;
 
@@ -11,7 +12,10 @@ export class CommentService {
   private http = inject(HttpClient);
   private baseUrl = `${BASE_URL}/comments`;
 
+  private destroyRef = inject(DestroyRef);
+
   public comments = signal<Comment[]>([]);
+  public isEpisodeLocked = signal<boolean>(false);
 
   getCommentsByEpisode(episodeId: number) {
     return this.http
@@ -45,5 +49,20 @@ export class CommentService {
         this.comments.update((prev) => prev.filter((comment) => comment.id !== commentId));
       }),
     );
+  }
+
+  checkLockStatus(episodeId: number) {
+    this.http
+      .get<boolean>(`${this.baseUrl}/lock-status/${episodeId}`)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((status) => this.isEpisodeLocked.set(status));
+  }
+
+  toggleEpisodeLock(episodeId: number) {
+    return this.http.patch(`${this.baseUrl}/lock/${episodeId}`, {});
+  }
+
+  getLockedEpisodes() {
+    return this.http.get<number[]>(`${this.baseUrl}/admin/locked`);
   }
 }

@@ -1,8 +1,9 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { FormUtils } from '../../utils/form-util';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-login',
@@ -16,6 +17,7 @@ export class Login {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
 
   private isPosting = signal(false);
   private hasError = signal(false);
@@ -53,20 +55,23 @@ export class Login {
 
     const { email, password } = this.loginForm.getRawValue();
 
-    this.authService.login(email!, password!).subscribe({
-      next: (isAuthenticated) => {
-        if (isAuthenticated) {
-          this.router.navigateByUrl('/characters');
-        } else {
+    this.authService
+      .login(email!, password!)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (isAuthenticated) => {
+          if (isAuthenticated) {
+            this.router.navigateByUrl('/characters');
+          } else {
+            this.isPosting.set(false);
+            this.showError();
+          }
+        },
+        error: () => {
           this.isPosting.set(false);
           this.showError();
-        }
-      },
-      error: () => {
-        this.isPosting.set(false);
-        this.showError();
-      },
-    });
+        },
+      });
   }
 
   private showError() {

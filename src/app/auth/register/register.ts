@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -10,6 +10,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { Router, RouterLink } from '@angular/router';
 import { FormUtils } from '../../utils/form-util';
 import { RegisterFormData } from '../interfaces/auth.interface';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-register',
@@ -20,9 +21,10 @@ import { RegisterFormData } from '../interfaces/auth.interface';
 export class Register {
   formUtils = FormUtils;
 
-  fb = inject(FormBuilder);
-  authService = inject(AuthService);
-  router = inject(Router);
+  private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
 
   hasError = signal(false);
   isPosting = signal(false);
@@ -95,20 +97,25 @@ export class Register {
     this.isPosting.set(true);
     const rawValues = this.registerForm.getRawValue();
 
+    const { repeatPassword, ...validData } = rawValues;
+
     const formData: RegisterFormData = {
-      ...rawValues,
-      zip: Number(rawValues.zip),
+      ...validData,
+      zip: Number(validData.zip),
     } as RegisterFormData;
 
-    this.authService.register(formData).subscribe({
-      next: () => {
-        this.router.navigateByUrl('');
-      },
-      error: () => {
-        this.isPosting.set(false);
-        this.showError();
-      },
-    });
+    this.authService
+      .register(formData)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.router.navigateByUrl('');
+        },
+        error: () => {
+          this.isPosting.set(false);
+          this.showError();
+        },
+      });
   }
 
   private showError() {

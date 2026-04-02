@@ -44,7 +44,14 @@ export const routes: Routes = [
           { path: ':id', component: EpisodeDetails },
         ],
       },
-      
+
+      {
+        path: 'admin-dashboard',
+        loadComponent: () =>
+          import('./components/admin-dashboard/admin-dashboard').then((m) => m.AdminDashboard),
+        canMatch: [authGuard],
+      },
+
       { path: 'profile', component: Profile, canActivate: [authGuard] },
     ],
   },

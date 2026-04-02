@@ -1,4 +1,4 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, DestroyRef, effect, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
 import { CommonModule } from '@angular/common';
@@ -11,6 +11,7 @@ import { EpisodeService } from '../../core/services/episode.service';
 import { Episode } from '../../core/interfaces/episode.interface';
 import { RouterLink } from '@angular/router';
 import { MatTooltip } from '@angular/material/tooltip';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'profile',
@@ -22,7 +23,7 @@ import { MatTooltip } from '@angular/material/tooltip';
     MatInputModule,
     MatFormFieldModule,
     RouterLink,
-    MatTooltip
+    MatTooltip,
   ],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
@@ -30,14 +31,15 @@ import { MatTooltip } from '@angular/material/tooltip';
 export class Profile {
   private authService = inject(AuthService);
   private fb = inject(FormBuilder);
+  private destroyRef = inject(DestroyRef);
   public favoriteService = inject(FavoriteService);
   public episodeService = inject(EpisodeService);
 
-  isEditing = signal(false);
-  isPosting = signal(false);
-  hasError = signal(false);
-  favoriteEpisodesData = signal<Episode[]>([]);
-  isLoadingFavorites = signal(true);
+  public isEditing = signal(false);
+  public isPosting = signal(false);
+  public hasError = signal(false);
+  public favoriteEpisodesData = signal<Episode[]>([]);
+  public isLoadingFavorites = signal(true);
 
   user = this.authService.user;
   defaultImg = 'assets/img/avatar.svg';
@@ -51,25 +53,27 @@ export class Profile {
   });
 
   constructor() {
-    effect(
-      () => {
-        const isLoadedFromDB = this.favoriteService.isInitialLoadDone();
-        const ids = this.favoriteService.favoriteIds();
+    effect(() => {
+      const isLoadedFromDB = this.favoriteService.isInitialLoadDone();
+      const ids = this.favoriteService.favoriteIds();
 
-        if (!isLoadedFromDB) {
-          this.isLoadingFavorites.set(true);
-          return;
-        }
-
-        if (ids.length === 0) {
-          this.favoriteEpisodesData.set([]);
-          this.isLoadingFavorites.set(false);
-          return;
-        }
-
+      if (!isLoadedFromDB) {
         this.isLoadingFavorites.set(true);
+        return;
+      }
 
-        this.episodeService.getEpisodesMultiple(ids).subscribe({
+      if (ids.length === 0) {
+        this.favoriteEpisodesData.set([]);
+        this.isLoadingFavorites.set(false);
+        return;
+      }
+
+      this.isLoadingFavorites.set(true);
+
+      this.episodeService
+        .getEpisodesMultiple(ids)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
           next: (episodes) => {
             this.favoriteEpisodesData.set(episodes);
             this.isLoadingFavorites.set(false);
@@ -78,8 +82,7 @@ export class Profile {
             this.isLoadingFavorites.set(false);
           },
         });
-      }
-    );
+    });
   }
 
   // Métodos para favoritos
@@ -96,16 +99,19 @@ export class Profile {
       return;
     }
 
-    this.episodeService.getEpisodesMultiple(ids).subscribe({
-      next: (episodes) => {
-        this.favoriteEpisodesData.set(episodes);
-        this.isLoadingFavorites.set(false);
-      },
-      error: (err) => {
-        console.error('Error loading favorite episodes:', err);
-        this.isLoadingFavorites.set(false);
-      },
-    });
+    this.episodeService
+      .getEpisodesMultiple(ids)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (episodes) => {
+          this.favoriteEpisodesData.set(episodes);
+          this.isLoadingFavorites.set(false);
+        },
+        error: (err) => {
+          console.error('Error loading favorite episodes:', err);
+          this.isLoadingFavorites.set(false);
+        },
+      });
   }
 
   removeFavorite(episodeId: number) {
@@ -130,16 +136,19 @@ export class Profile {
 
     this.isLoadingFavorites.set(true);
 
-    this.episodeService.getEpisodesMultiple(ids).subscribe({
-      next: (episodes) => {
-        this.favoriteEpisodesData.set(episodes);
-        this.isLoadingFavorites.set(false);
-      },
-      error: (err) => {
-        console.error('Error loading favorite episodes:', err);
-        this.isLoadingFavorites.set(false);
-      },
-    });
+    this.episodeService
+      .getEpisodesMultiple(ids)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (episodes) => {
+          this.favoriteEpisodesData.set(episodes);
+          this.isLoadingFavorites.set(false);
+        },
+        error: (err) => {
+          console.error('Error loading favorite episodes:', err);
+          this.isLoadingFavorites.set(false);
+        },
+      });
   });
 
   // Métodos del perfil
@@ -169,18 +178,21 @@ export class Profile {
           : updatedData.birthdate,
     };
 
-    this.authService.updateProfile(this.user()!.id, body).subscribe({
-      next: (user) => {
-        console.log('DB updated', user);
-        this.isEditing.set(false);
-        this.isPosting.set(false);
-      },
-      error: (err) => {
-        console.error('Error:', err);
-        this.isPosting.set(false);
-        this.showError();
-      },
-    });
+    this.authService
+      .updateProfile(this.user()!.id, body)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (user) => {
+          console.log('DB updated', user);
+          this.isEditing.set(false);
+          this.isPosting.set(false);
+        },
+        error: (err) => {
+          console.error('Error:', err);
+          this.isPosting.set(false);
+          this.showError();
+        },
+      });
 
     console.log('Profile saved', updatedData);
     this.isEditing.set(false);

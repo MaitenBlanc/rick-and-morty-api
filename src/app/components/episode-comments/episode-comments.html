@@ -1,9 +1,29 @@
 <div class="comments-section my-5 pt-4 border-top border-secondary text-white">
-  <h4 class="text-info fw-bold mb-4">
-    <i class="bi bi-chat-left-text-fill me-2"></i> Comments ({{ comments().length }})
-  </h4>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="text-info fw-bold m-0">
+      <i class="bi bi-chat-left-text-fill me-2"></i> Comments ({{ comments().length }})
+    </h4>
 
-  @if (currentUser()) {
+    @if (isAdmin()) {
+      <button
+        class="btn btn-sm"
+        [ngClass]="isLocked() ? 'btn-success' : 'btn-danger'"
+        (click)="toggleLock()"
+      >
+        <i class="bi" [ngClass]="isLocked() ? 'bi-unlock' : 'bi-lock'"></i>
+        {{ isLocked() ? 'Enable Comments' : 'Disable Comments' }}
+      </button>
+    }
+  </div>
+
+  @if (isLocked() && !isAdmin()) {
+    <div
+      class="alert alert-warning border-warning bg-dark text-warning text-center py-4 mb-5 shadow-sm"
+    >
+      <i class="bi bi-info-circle fs-3 d-block mb-2"></i>
+      <p class="mb-0">An administrator has disabled new comments for this episode.</p>
+    </div>
+  } @else if (currentUser()) {
     <div class="card bg-dark border-secondary mb-5 shadow-sm">
       <div class="card-body">
         <form [formGroup]="commentForm" (ngSubmit)="onSubmit()">
@@ -101,7 +121,7 @@
                 }
               </div>
 
-              @if (comment.userId === currentUser()?.id) {
+              @if (comment.userId === currentUser()?.id || isAdmin()) {
                 <div class="dropdown">
                   <button
                     class="btn btn-sm btn-dark text-secondary border-0 px-2 py-0"
@@ -111,11 +131,13 @@
                     <i class="bi bi-three-dots-vertical"></i>
                   </button>
                   <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow">
-                    <li>
-                      <button class="dropdown-item text-warning" (click)="startEdit(comment)">
-                        <i class="bi bi-pencil-square me-2"></i> Edit
-                      </button>
-                    </li>
+                    @if (comment.userId === currentUser()?.id) {
+                      <li>
+                        <button class="dropdown-item text-warning" (click)="startEdit(comment)">
+                          <i class="bi bi-pencil-square me-2"></i> Edit
+                        </button>
+                      </li>
+                    }
                     <li>
                       <button class="dropdown-item text-danger" (click)="onDelete(comment.id)">
                         <i class="bi bi-trash3 me-2"></i> Delete

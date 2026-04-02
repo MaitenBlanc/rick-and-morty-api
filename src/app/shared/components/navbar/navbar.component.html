@@ -11,7 +11,7 @@
   </button>
 
   <div class="collapse navbar-collapse bg-dark" id="navbarNav">
-    @if (authService.user()) {
+    @if (user()) {
       <ul class="navbar-nav me-auto">
         <li class="nav-item d-flex align-items-center">
           <a class="nav-link" routerLink="/characters" routerLinkActive="active">Characters</a>
@@ -30,17 +30,33 @@
         </li>
       </ul>
 
-      <div class="d-flex align-items-center text-secondary px-4" matTooltip="Go to profile">
-        <a class="text-primary me-4 fw-bold" routerLink="/profile">
-          <img
-            [src]="authService.user()?.imgProfile"
-            alt="Profile Picture"
-            class="rounded-circle me-2 object-fit-cover"
-            style="width: 1.5rem; height: 1.5rem; border: 1px solid #0d6efd"
-          />{{ authService.user()?.fullName }}
-        </a>
+      <div class="d-flex align-items-center text-secondary px-4">
+        @if (isAdmin()) {
+          <a
+            class="text-info me-4 fw-bold text-decoration-none"
+            routerLink="/admin-dashboard"
+            matTooltip="Go to Admin Dashboard"
+          >
+            <i class="bi bi-shield-lock-fill me-2"></i>Admin Panel
+          </a>
+        } @else {
+          <a
+            class="text-primary me-4 fw-bold text-decoration-none"
+            routerLink="/profile"
+            matTooltip="Go to profile"
+          >
+            <img
+              [src]="user()?.imgProfile || 'assets/img/avatar.svg'"
+              alt="Profile Picture"
+              class="rounded-circle me-2 object-fit-cover"
+              style="width: 1.5rem; height: 1.5rem; border: 1px solid #0d6efd"
+            />{{ user()?.fullName }}
+          </a>
+        }
 
-        <span class="logout-link" style="cursor: pointer" (click)="onLogout()"> Log Out </span>
+        <span class="logout-link fw-semibold" style="cursor: pointer" (click)="onLogout()">
+          <i class="bi bi-box-arrow-right me-1"></i> Log Out
+        </span>
       </div>
     } @else {
       <ul class="navbar-nav ms-auto px-4">
