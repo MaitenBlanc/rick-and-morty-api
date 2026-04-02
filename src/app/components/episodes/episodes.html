@@ -1,0 +1,72 @@
+<div class="container mt-4">
+  <app-breadcrumb [steps]="[{ label: 'Episodes' }]" />
+
+  <div class="row my-3 mb-4">
+    <div class="col-md-4">
+      <div class="input-group">
+        <input
+          type="text"
+          class="form-control bg-dark text-white border-secondary"
+          placeholder="Search..."
+          #searchInput
+          (keyup.enter)="onSearch(searchInput.value)"
+        />
+        <button class="btn btn-outline-primary" type="button" (click)="onSearch(searchInput.value)">
+          Search
+        </button>
+      </div>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <div class="d-flex justify-content-center my-5">
+      <div class="spinner-border text-info" role="status"></div>
+    </div>
+  } @else {
+    <div class="row row-cols-1 row-cols-md-5 g-2">
+      @for (episode of episodes(); track episode.id) {
+        <div class="col">
+          <div class="card h-100 bg-dark border-secondary text-white shadow-sm">
+            <div class="card-body">
+              <div class="bg-transparent d-flex justify-content-between">
+                <a
+                  class="nav-link active m-auto"
+                  matTooltip="View Details"
+                  [routerLink]="['/episodes', episode.id]"
+                >
+                  <h4 class="card-title text-info d-flex m-0">Episode {{ episode.id }}</h4>
+                </a>
+                <button class="btn btn-sm p-0" (click)="favoriteService.toggleFavorite(episode.id)">
+                  <i
+                    class="bi fs-4"
+                    [ngClass]="
+                      favoriteService.isFavorite(episode.id)
+                        ? 'bi-heart-fill text-danger'
+                        : 'bi-heart text-white'
+                    "
+                    alt="favorite icon"
+                  >
+                  </i>
+                </button>
+              </div>
+              <hr />
+              <h5 class="card-title text-info">{{ episode.name }}</h5>
+              <p class="card-text mb-1">
+                <span class="text-secondary">Episode:</span> {{ episode.episode }}
+              </p>
+              <p class="card-text">
+                <span class="text-secondary">Air Date:</span> {{ episode.air_date }}
+              </p>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <app-pagination
+      [current]="currentPage()"
+      [total]="totalPages()"
+      (onPageChange)="changePage($event)"
+    />
+  }
+</div>

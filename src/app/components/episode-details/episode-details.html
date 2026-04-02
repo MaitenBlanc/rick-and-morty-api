@@ -1,0 +1,79 @@
+<div class="container mt-4 text-white">
+  <app-breadcrumb [steps]="breadcrumbSteps()" />
+
+  @if (isLoading()) {
+    <div class="text-center my-5">
+      <div class="spinner-border text-info"></div>
+    </div>
+  } @else {
+    <div class="p-4 mt-4 bg-dark rounded shadow-sm">
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="border border-secondary rounded p-4 h-100 bg-transparent">
+            <div class="d-flex justify-content-between">
+              <h4 class="text-info fw-bold m-0">
+                <span class="align-middle">Info of the episode</span>
+              </h4>
+
+              <button
+                class="btn btn-sm p-0 d-flex justify-content-between"
+                (click)="favoriteService.toggleFavorite(episode()!.id)"
+              >
+                <i
+                  class="bi fs-4"
+                  [ngClass]="
+                    favoriteService.isFavorite(episode()!.id)
+                      ? 'bi-heart-fill text-danger'
+                      : 'bi-heart text-white'
+                  "
+                  alt="favorite icon"
+                >
+                </i>
+              </button>
+            </div>
+            <hr class="border-secondary opacity-50" />
+
+            <div class="mb-2" style="font-size: 1.1rem">
+              <span class="text-secondary fw-bold">Name:</span>
+              <span class="text-light ms-1">{{ episode()?.name }}</span>
+            </div>
+            <div class="mb-2" style="font-size: 1.1rem">
+              <span class="text-secondary fw-bold">air date:</span>
+              <span class="text-light ms-1">{{ episode()?.air_date }}</span>
+            </div>
+            <div class="mb-0" style="font-size: 1.1rem">
+              <span class="text-secondary fw-bold">episode code:</span>
+              <span class="text-light ms-1">{{ episode()?.episode }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="border border-secondary rounded p-4 h-100 bg-transparent">
+            <h4 class="text-info mb-4 fw-bold">Characters in this episode</h4>
+
+            <hr class="border-secondary opacity-50" />
+
+            <div class="row">
+              @for (char of characters(); track char.id) {
+                <div class="col-4 mb-2">
+                  <a
+                    class="text-primary text-decoration-none mb-1"
+                    (click)="navigateToCharacters(char.id)"
+                    style="cursor: pointer"
+                  >
+                    {{ char.name }}
+                  </a>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (episode()) {
+    <app-episode-comments [episodeId]="episode()!.id" />
+  }
+</div>

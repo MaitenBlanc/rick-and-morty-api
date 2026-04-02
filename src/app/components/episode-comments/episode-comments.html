@@ -1,0 +1,166 @@
+<div class="comments-section my-5 pt-4 border-top border-secondary text-white">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="text-info fw-bold m-0">
+      <i class="bi bi-chat-left-text-fill me-2"></i> Comments ({{ comments().length }})
+    </h4>
+
+    @if (isAdmin()) {
+      <button
+        class="btn btn-sm"
+        [ngClass]="isLocked() ? 'btn-success' : 'btn-danger'"
+        (click)="toggleLock()"
+      >
+        <i class="bi" [ngClass]="isLocked() ? 'bi-unlock' : 'bi-lock'"></i>
+        {{ isLocked() ? 'Enable Comments' : 'Disable Comments' }}
+      </button>
+    }
+  </div>
+
+  @if (isLocked() && !isAdmin()) {
+    <div
+      class="alert alert-warning border-warning bg-dark text-warning text-center py-4 mb-5 shadow-sm"
+    >
+      <i class="bi bi-info-circle fs-3 d-block mb-2"></i>
+      <p class="mb-0">An administrator has disabled new comments for this episode.</p>
+    </div>
+  } @else if (currentUser()) {
+    <div class="card bg-dark border-secondary mb-5 shadow-sm">
+      <div class="card-body">
+        <form [formGroup]="commentForm" (ngSubmit)="onSubmit()">
+          <div class="d-flex align-items-center mb-2 gap-2">
+            <img
+              [src]="currentUser()?.imgProfile || 'assets/img/avatar.svg'"
+              class="rounded-circle border border-info"
+              width="35"
+              height="35"
+              alt="Tu avatar"
+            />
+            <label class="form-label text-light mb-0 fw-semibold">
+              {{ editingCommentId() ? 'Editing comment...' : 'Leave a comment:' }}
+            </label>
+          </div>
+
+          <textarea
+            formControlName="content"
+            class="form-control bg-dark text-white border-secondary custom-textarea mb-2"
+            rows="3"
+            placeholder="What do you think about this episode?"
+          >
+          </textarea>
+
+          <div class="d-flex justify-content-between align-items-center mt-2">
+            <div class="text-danger small fw-bold">
+              @if (
+                commentForm.get('content')?.touched &&
+                commentForm.get('content')?.hasError('required')
+              ) {
+                <span><i class="bi bi-exclamation-circle"></i> Content is required.</span>
+              }
+              @if (
+                commentForm.get('content')?.touched &&
+                commentForm.get('content')?.hasError('minlength')
+              ) {
+                <span><i class="bi bi-exclamation-circle"></i> Minimum 2 characters.</span>
+              }
+            </div>
+
+            <div class="d-flex gap-2">
+              @if (editingCommentId()) {
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-secondary"
+                  (click)="cancelEdit()"
+                >
+                  Cancel
+                </button>
+              }
+              <button
+                type="submit"
+                class="btn btn-sm fw-bold px-4"
+                [ngClass]="editingCommentId() ? 'btn-warning' : 'btn-info'"
+                [disabled]="commentForm.invalid || isSubmitting()"
+              >
+                @if (isSubmitting()) {
+                  <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                }
+                {{ editingCommentId() ? 'Update' : 'Post' }}
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  } @else {
+    <div class="alert alert-dark border-secondary text-center py-4 mb-5">
+      <i class="bi bi-lock-fill text-secondary fs-3 d-block mb-2"></i>
+      <p class="mb-0 text-light">You must be logged in to post comments.</p>
+      <a routerLink="/auth/login" class="btn btn-outline-info mt-3 btn-sm px-4">Log in now</a>
+    </div>
+  }
+
+  <div class="comments-list">
+    @for (comment of comments(); track comment.id) {
+      <div class="d-flex mb-4 gap-3">
+        <img
+          [src]="comment.user.imgProfile || 'assets/img/avatar.svg'"
+          class="rounded-circle border border-secondary"
+          style="width: 50px; height: 50px; object-fit: cover"
+          alt="User avatar"
+        />
+
+        <div class="grow">
+          <div class="bg-dark p-3 rounded border border-secondary position-relative">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div>
+                <span class="text-info fw-bold me-2">{{ comment.user.nickname }}</span>
+                <span class="text-secondary small">
+                  {{ comment.createdAt | date: 'MMM d, y, h:mm a' }}
+                </span>
+                @if (comment.createdAt !== comment.updatedAt) {
+                  <span class="text-secondary small fst-italic ms-2">(edited)</span>
+                }
+              </div>
+
+              @if (comment.userId === currentUser()?.id || isAdmin()) {
+                <div class="dropdown">
+                  <button
+                    class="btn btn-sm btn-dark text-secondary border-0 px-2 py-0"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                  >
+                    <i class="bi bi-three-dots-vertical"></i>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow">
+                    @if (comment.userId === currentUser()?.id) {
+                      <li>
+                        <button class="dropdown-item text-warning" (click)="startEdit(comment)">
+                          <i class="bi bi-pencil-square me-2"></i> Edit
+                        </button>
+                      </li>
+                    }
+                    <li>
+                      <button class="dropdown-item text-danger" (click)="onDelete(comment.id)">
+                        <i class="bi bi-trash3 me-2"></i> Delete
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              }
+            </div>
+
+            <p class="mb-0 text-light" style="white-space: pre-wrap; word-break: break-word">
+              {{ comment.content }}
+            </p>
+          </div>
+        </div>
+      </div>
+    } @empty {
+      <div class="text-center py-5 border border-secondary rounded bg-dark">
+        <i class="bi bi-chat-square-dots text-secondary" style="font-size: 3rem"></i>
+        <p class="text-secondary mt-3 mb-0">
+          No comments yet. Be the first to share your thoughts!
+        </p>
+      </div>
+    }
+  </div>
+</div>

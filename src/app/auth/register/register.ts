@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -10,6 +10,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { Router, RouterLink } from '@angular/router';
 import { FormUtils } from '../../utils/form-util';
 import { RegisterFormData } from '../interfaces/auth.interface';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-register',
@@ -20,9 +21,10 @@ import { RegisterFormData } from '../interfaces/auth.interface';
 export class Register {
   formUtils = FormUtils;
 
-  fb = inject(FormBuilder);
-  authService = inject(AuthService);
-  router = inject(Router);
+  private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
 
   hasError = signal(false);
   isPosting = signal(false);
@@ -40,11 +42,12 @@ export class Register {
           Validators.pattern('(?=.*[0-9]).*'),
         ],
       ],
+      nickname: ['', [Validators.required, Validators.minLength(3)]],
       repeatPassword: ['', [Validators.required]],
       address: ['', [Validators.required, Validators.minLength(8)]],
       city: ['', [Validators.required, Validators.minLength(6)]],
       state: ['', [Validators.required, Validators.minLength(6)]],
-      zip: [, [Validators.required, Validators.pattern('^[0-9]*$')]],
+      zip: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
     },
     {
       validators: [this.isFieldOneEqualFieldTwo('password', 'repeatPassword')],
@@ -92,18 +95,27 @@ export class Register {
     }
 
     this.isPosting.set(true);
+    const rawValues = this.registerForm.getRawValue();
 
-    const formData = this.registerForm.getRawValue() as RegisterFormData;
+    const { repeatPassword, ...validData } = rawValues;
 
-    this.authService.register(formData).subscribe({
-      next: () => {
-        this.router.navigateByUrl('');
-      },
-      error: () => {
-        this.isPosting.set(false);
-        this.showError();
-      },
-    });
+    const formData: RegisterFormData = {
+      ...validData,
+      zip: Number(validData.zip),
+    } as RegisterFormData;
+
+    this.authService
+      .register(formData)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.router.navigateByUrl('');
+        },
+        error: () => {
+          this.isPosting.set(false);
+          this.showError();
+        },
+      });
   }
 
   private showError() {
