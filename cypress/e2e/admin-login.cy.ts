@@ -3,7 +3,7 @@ describe('Flujo de Administrador', () => {
     // Entrar a la ruta
     cy.visit('auth/login');
 
-    // Buscar inputs email y pass
+    // Llenar inputs email y pass
     cy.get('input[type="email"').type('admin@gmail.com');
     cy.get('input[type="password"').type('Abc123');
 
@@ -19,7 +19,6 @@ describe('Flujo de Administrador', () => {
     // Verificar el admin panel
     cy.contains('Admin Panel').click();
     cy.url().should('include', '/admin-dashboard');
-
 
     // Verificar el título del panel
     cy.contains('Admin Dashboard').should('be.visible');
