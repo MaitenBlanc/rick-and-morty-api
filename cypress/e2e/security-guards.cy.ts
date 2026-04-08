@@ -10,9 +10,9 @@ describe('Prueba de seguridad y route guards', () => {
   it('Bloquear acceso a Admin Panel a un usuario común', () => {
     // Pasos login usuario común
     cy.visit('auth/login');
-    cy.get('input[type="email"').type('prueba1@gmail.com');
-    cy.get('input[type="password"').type('Abc123');
-    cy.get('button[type="submit"').click();
+    cy.get(':nth-child(1) > .form-control').type('prueba1@gmail.com');
+    cy.get(':nth-child(2) > .form-control').type('Abc123');
+    cy.get('.btn').click();
     cy.url().should('include', '/characters');
 
     // Ir a admin panel (no debería poderse)

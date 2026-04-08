@@ -1,10 +1,10 @@
 describe('Flujo de bloqueo de Comentarios', () => {
   it('Permite a un admin bloquear/desbloquear comentarios', () => {
-    // Mismos pasos de admin-login
+    // Mismos pasos de admin login
     cy.visit('auth/login');
-    cy.get('input[type="email"').type('admin@gmail.com');
-    cy.get('input[type="password"').type('Abc123');
-    cy.get('button[type="submit"').click();
+    cy.get(':nth-child(1) > .form-control').type('admin@gmail.com');
+    cy.get(':nth-child(2) > .form-control').type('Abc123');
+    cy.get('.btn').click();
     cy.url().should('include', '/characters');
 
     // Ir a vista episodios

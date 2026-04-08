@@ -4,11 +4,11 @@ describe('Flujo de usuario común', () => {
     cy.visit('auth/login');
 
     // Llenar inputs email y pass
-    cy.get('input[type="email"').type('prueba1@gmail.com');
-    cy.get('input[type="password"').type('Abc123');
+    cy.get(':nth-child(1) > .form-control').type('prueba1@gmail.com');
+    cy.get(':nth-child(2) > .form-control').type('Abc123');
 
     // Click botón sign in
-    cy.get('button[type="submit"').click();
+    cy.get('.btn').click();
 
     // Verificar si url cambió al panel
     cy.url().should('include', '/characters');
@@ -17,6 +17,6 @@ describe('Flujo de usuario común', () => {
     cy.contains('Admin Panel').should('not.exist');
 
     // Verificar la foto de perfil en el navbar
-    cy.get('img[alt="Profile Picture"]').should('be.visible');
+    cy.get('.rounded-circle').should('be.visible');
   });
 });

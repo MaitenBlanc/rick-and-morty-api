@@ -4,11 +4,11 @@ describe('Flujo de Administrador', () => {
     cy.visit('auth/login');
 
     // Llenar inputs email y pass
-    cy.get('input[type="email"').type('admin@gmail.com');
-    cy.get('input[type="password"').type('Abc123');
+    cy.get(':nth-child(1) > .form-control').type('admin@gmail.com');
+    cy.get(':nth-child(2) > .form-control').type('Abc123');
 
     // Click botón sign in
-    cy.get('button[type="submit"').click();
+    cy.get('.btn').click();
 
     // Verificar si url cambió al panel
     cy.url().should('include', '/characters');
