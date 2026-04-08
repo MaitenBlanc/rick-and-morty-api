@@ -1,6 +1,6 @@
+import { provideRouter } from '@angular/router';
+import { Navbar } from './navbar.component';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { Navbar } from './navbar/navbar';
 
 describe('Navbar', () => {
   let component: Navbar;
@@ -8,9 +8,9 @@ describe('Navbar', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Navbar]
-    })
-    .compileComponents();
+      imports: [Navbar],
+      providers: [provideRouter([{ path: 'auth/login', children: [] }])],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(Navbar);
     component = fixture.componentInstance;

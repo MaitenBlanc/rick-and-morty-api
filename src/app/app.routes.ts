@@ -10,6 +10,7 @@ import { Register } from './auth/register/register';
 import { Profile } from './components/profile/profile';
 import { Episodes } from './components/episodes/episodes';
 import { EpisodeDetails } from './components/episode-details/episode-details';
+import { adminGuard } from './core/guards/admin.guard';
 
 export const routes: Routes = [
   {
@@ -49,7 +50,7 @@ export const routes: Routes = [
         path: 'admin-dashboard',
         loadComponent: () =>
           import('./components/admin-dashboard/admin-dashboard').then((m) => m.AdminDashboard),
-        canMatch: [authGuard],
+        canMatch: [adminGuard],
       },
 
       { path: 'profile', component: Profile, canActivate: [authGuard] },

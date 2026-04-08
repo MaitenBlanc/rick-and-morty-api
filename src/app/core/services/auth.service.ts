@@ -3,7 +3,7 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../environments/environment.prod';
 import { AuthResponse, RegisterFormData, User } from '../../auth/interfaces/auth.interface';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { Observable, map, catchError, of, throwError, tap } from 'rxjs';
+import { Observable, map, catchError, of, throwError, tap, switchMap } from 'rxjs';
 import { Router } from '@angular/router';
 
 type AuthStatus = 'checking' | 'authenticated' | 'not-authenticated';
@@ -30,7 +30,11 @@ export class AuthService {
 
   login(email: string, password: string): Observable<boolean> {
     return this.http.post<AuthResponse>(`${BASE_URL}/auth/login`, { email, password }).pipe(
-      tap((resp) => this.handleAuthSuccess(resp)), // Guardar info user y token
+      tap((resp) => {
+        localStorage.setItem('token', resp.token);
+        this.handleAuthSuccess(resp); // Guardar info user y token
+      }),
+      switchMap(() => this.checkStatus()),
       map(() => true),
     );
   }
