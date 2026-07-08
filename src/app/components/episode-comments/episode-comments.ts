@@ -5,6 +5,8 @@ import { CommentService } from '../../core/services/comment.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Comment } from '../../core/interfaces/comment.interface';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialog } from '../confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-episode-comments',
@@ -19,6 +21,7 @@ export class EpisodeComments implements OnInit {
   private authService = inject(AuthService);
   private fb = inject(FormBuilder);
   private destroyRef = inject(DestroyRef);
+  private dialog = inject(MatDialog);
 
   public comments = this.commentService.comments;
   public currentUser = this.authService.user;
@@ -98,13 +101,25 @@ export class EpisodeComments implements OnInit {
   }
 
   onDelete(id: string) {
-    if (confirm('Are you sure you want to delete this comment?')) {
-      this.commentService.deleteComment(id).subscribe({
-        error: (err) => {
-          console.error('Error deleting comment', err);
-        },
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+      width: '350px',
+      data: { message: 'Are you sure you want to delete this comment?' },
+      panelClass: 'dark-theme-dialog'
+    });
+
+    dialogRef.afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((result: boolean) => {
+        if (result) {
+          this.commentService.deleteComment(id)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+              error: (err) => {
+                console.error('Error deleting comment', err);
+              },
+            });
+        }
       });
-    }
   }
 
   toggleLock() {

@@ -13,7 +13,6 @@ export class App {
   protected readonly title = signal('rick-morty-api');
 
   constructor(authService: AuthService) {
-    console.log('Estado al recargar:', authService.authStatus());
-    console.log('Token en localStorage:', localStorage.getItem('token'));
+    console.log('Status: ', authService.authStatus());
   }
 }
